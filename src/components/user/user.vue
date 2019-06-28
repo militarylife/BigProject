@@ -20,7 +20,7 @@
       <el-table-column prop="mobile" label="电话"></el-table-column>
       <el-table-column label="当前状态">
         <template slot-scope="scope">
-            <!-- {{scope.row}} -->
+          <!-- {{scope.row}} -->
           <el-switch v-model="scope.row.mg_state" active-color="#13ce66" inactive-color="#ff4949"></el-switch>
         </template>
       </el-table-column>
@@ -33,37 +33,37 @@
       </el-table-column>
     </el-table>
     <!-- 分页内容 -->
-     <el-pagination
+    <el-pagination
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="pagenum"
       :page-sizes="pagesizes"
       :page-size="pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="total">
-    </el-pagination>
+      :total="total"
+    ></el-pagination>
     <!-- 新增对话框 -->
-    <el-dialog  title="添加用户" :visible.sync="dialogFormVisible">
-        {{userObj}}
-    <el-form :model="userObj">
-    <el-form-item label="用户名" :label-width="formLabelWidth">
-      <el-input v-model="userObj.username"  autocomplete="off"></el-input>
-    </el-form-item>
-     <el-form-item label="密码" :label-width="formLabelWidth">
-      <el-input v-model="userObj.password"  autocomplete="off"></el-input>
-    </el-form-item>
-     <el-form-item label="邮箱" :label-width="formLabelWidth">
-      <el-input v-model="userObj.email"  autocomplete="off"></el-input>
-    </el-form-item>
-     <el-form-item label="手机" :label-width="formLabelWidth">
-      <el-input v-model="userObj.mobile"  autocomplete="off"></el-input>
-    </el-form-item>
-  </el-form>
-  <div slot="footer" class="dialog-footer">
-    <el-button  @click.prevent="addCancel">取 消</el-button>
-    <el-button type="primary" @click.prevent="confirmAdd">确 定</el-button>
-  </div>
-</el-dialog>
+    <el-dialog title="添加用户" :visible.sync="dialogFormVisible">
+      {{userObj}}
+      <el-form :model="userObj">
+        <el-form-item label="用户名" :label-width="formLabelWidth">
+          <el-input v-model="userObj.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" :label-width="formLabelWidth">
+          <el-input v-model="userObj.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="userObj.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" :label-width="formLabelWidth">
+          <el-input v-model="userObj.mobile" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.prevent="addCancel">取 消</el-button>
+        <el-button type="primary" @click.prevent="confirmAdd">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -71,89 +71,91 @@
 export default {
   data() {
     return {
-        query: '',
-        pagenum: 1,
-        pagesize: 3,
-        pagesizes: [1,3,5],
-        total: 0,
-        formLabelWidth: '80px',
-        dialogFormVisible: false,
-        userObj:{
-            username: '',
-            password: '',
-            email: '',
-            mobile: ''
-        },
-      tableData: [],
-
+      query: "",
+      pagenum: 1,
+      pagesize: 3,
+      pagesizes: [1, 3, 5],
+      total: 0,
+      formLabelWidth: "80px",
+      dialogFormVisible: false,
+      userObj: {
+        username: "",
+        password: "",
+        email: "",
+        mobile: ""
+      },
+      tableData: []
     };
   },
-  methods:{
-      getTableDate(){
-          this.$http({
-              method: 'get',
-              url: `http://localhost:8888/api/private/v1/users?query=${this.query}&pagenum=${this.pagenum}&pagesize=${this.pagesize}`,
-              headers:{
-                  Authorization:window.localStorage.getItem('token')
-              }
-          }).then(res=>{
-              console.log(res)
-              let { data, meta} = res.data
-              if (meta.status==200){
-                  this.tableData = data.users
-                  this.total = data.total
-              }
-          })
-      },
+  methods: {
+    getTableDate() {
+      this.$http({
+        method: "get",
+        url: `http://localhost:8888/api/private/v1/users?query=${
+          this.query
+        }&pagenum=${this.pagenum}&pagesize=${this.pagesize}`,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
+        }
+      }).then(res => {
+        console.log(res);
+        let { data, meta } = res.data;
+        if (meta.status == 200) {
+          this.tableData = data.users;
+          this.total = data.total;
+        }
+      });
+    },
     // 页容量
-      handleSizeChange(pagesize){
-          this.pagesize=pagesize
-          this.getTableDate()
-      },
+    handleSizeChange(pagesize) {
+      this.pagesize = pagesize;
+      this.getTableDate();
+    },
     // 当前页码
-    handleCurrentChange(pagenum){
-        this.pagenum=pagenum
-        this.getTableDate()
+    handleCurrentChange(pagenum) {
+      this.pagenum = pagenum;
+      this.getTableDate();
     },
     // 弹出添用户加框
-    addUserfn(){
-        this.dialogFormVisible= true
+    addUserfn() {
+      this.dialogFormVisible = true;
     },
+    
     // 新增中取消按钮
-    addCancel(){
-        this.dialogFormVisible= false
+    addCancel() {
+      this.dialogFormVisible = false;
     },
+
     // 点击确认添加用户
-    confirmAdd(){
-        this.$http({
-            method: 'post',
-            url: 'http://localhost:8888/api/private/v1/users',
-            data: this.userObj,
-            headers: {
-               Authorization: window.localStorage.getItem('token')
-            }
-        }).then(res=>{
-            // console.log(res.data)
-            let { meta, data} = res.data
-            if (meta.status==201){
-                this.$message({
-                    message: meta.msg,
-                    type: 'success'
-                })
-                this.getTableDate()
-            }else{
-                this.$message.error(meta.msg)
-            }
-             for (var key in this.userObj){
-             this.userObj[key] = ''
+    confirmAdd() {
+      this.$http({
+        method: "post",
+        url: "http://localhost:8888/api/private/v1/users",
+        data: this.userObj,
+        headers: {
+          Authorization: window.localStorage.getItem("token")
         }
-        this.dialogFormVisible= false
-        })
-       
+      }).then(res => {
+        // console.log(res.data)
+        let { meta, data } = res.data;
+        if (meta.status == 201) {
+          this.$message({
+            message: meta.msg,
+            type: "success"
+          });
+          this.getTableDate();
+        } else {
+          this.$message.error(meta.msg);
+        }
+        for (var key in this.userObj) {
+          this.userObj[key] = "";
+        }
+        this.dialogFormVisible = false;
+      });
     }
   },
-  mounted(){
-      this.getTableDate()
+  mounted() {
+    this.getTableDate();
   }
 };
 </script>
